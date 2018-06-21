@@ -87,7 +87,8 @@ public class BlockCorn extends BlockCrops implements IGrowable{
 	public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
 	{
 		int j = state.getValue(AGE).intValue();
-	//states  are on the bottom,have blocks above, or corn is done, do not grow them
+	
+		//states  are on the bottom,have blocks above, or corn is done, do not grow them
 		if( j != 9 && j!= 10 && j!= 11){
 			if (worldIn.getBlockState(pos.down()).getBlock() == this || canBlockStay(worldIn, pos,state))
 			{
@@ -95,7 +96,9 @@ public class BlockCorn extends BlockCrops implements IGrowable{
 				{
 					if (worldIn.getLightFromNeighbors(pos.up()) >= 9)
 					{
-						if (rand.nextInt(Config.growChance) == 1)
+						boolean canGrow = rand.nextInt(Config.growChance) == 1;
+						
+						if (net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, canGrow))
 						{
 							//Then Corn can grow
 							if(j == 0 || j == 1 || j == 2){
@@ -143,6 +146,7 @@ public class BlockCorn extends BlockCrops implements IGrowable{
 									}
 								}
 							}
+							net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
 						}
 					}
 				}
